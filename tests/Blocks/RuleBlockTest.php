@@ -17,6 +17,7 @@ class RuleBlockTest extends PHPUnit_Framework_TestCase
         $parser = new \Naouak\Commonmark\Parser($markdown);
         $block = \Naouak\Commonmark\Blocks\RuleBlock::check($parser);
         $this->assertNotNull($block, "'$markdown' not recognized");
+        $this->assertEquals("<hr />", $block->render());
     }
 
     /**

@@ -14,4 +14,5 @@ use Naouak\Commonmark\Parser;
 interface Block
 {
     public static function check(Parser $parser);
+    public function render();
 }
