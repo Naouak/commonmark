@@ -1,0 +1,15 @@
+{
+  "name": "naouak/commonmark",
+  "type": "library",
+  "description": "CommonMark Parser",
+  "autoload": {
+    "psr-4": {
+      "Naouak\\Commonmark\\" : "src/",
+      "Naouak\\Commonmark\\Tests\\" : "tests/"
+    }
+  },
+
+  "require-dev": {
+    "phpunit/phpunit": "4.8.*"
+  }
+}
