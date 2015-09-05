@@ -43,6 +43,18 @@ class Parser
     }
 
     /**
+     * Return next line without advancing the stack
+     * @return mixed
+     */
+    public function peakAhead(){
+        if(end($this->stack) < count($this->lines)){
+            return $this->lines[end($this->stack)];
+        } else {
+            throw new \OutOfRangeException();
+        }
+    }
+
+    /**
      * Return next line in stack
      * @return mixed
      */
