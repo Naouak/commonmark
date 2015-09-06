@@ -31,15 +31,17 @@ class HTMLBlock implements Block
             $lines = [];
             $tag = $matches[0];
             try{
-                while(!preg_match("/</$tag>/i", $line)){
+                while(!preg_match("/<\/$tag>/i", $line)){
                     $parser->consumeLine();
                     $lines[] = $line;
                     $line = $parser->peakAhead();
                 }
             } catch(\OutOfRangeException $ignored){}
+            try{
+                $parser->consumeLine();
+                $lines[] = $line;
+            } catch(\OutOfRangeException $ignored){}
 
-            $parser->consumeLine();
-            $lines[] = $line;
 
             return new HTMLBlock($parser, $lines);
         }
@@ -121,7 +123,7 @@ class HTMLBlock implements Block
             "section", "source", "summary", "table", "tbody", "td", "tfoot", "th", "thead", "title", "tr", "track",
             "ul"
         ];
-        if(preg_match("/^ {0,3}</?(".implode("|",$tags).")( |$|>|/>)/", $line)){
+        if(preg_match("/^ {0,3}<\/?(".implode("|",$tags).")( |$|\/?>)/i", $line)){
             $lines = [];
             try{
                 while(!preg_match("/^ *$/", $line)){
@@ -130,10 +132,9 @@ class HTMLBlock implements Block
                     $line = $parser->peakAhead();
                 }
             } catch(\OutOfRangeException $ignored){}
-
-            $parser->consumeLine();
-            $lines[] = $line;
-
+            try{
+                $parser->consumeLine();
+            } catch(\OutOfRangeException $ignored){}
             return new HTMLBlock($parser, $lines);
         }
 
@@ -145,8 +146,9 @@ class HTMLBlock implements Block
         $single_quoted_attrib_value = "'[^']*'";
         $double_quoted_attrib_value = "\"[^\"]*\"";
         $attributes = " +$attrib_name( *= *($attrib_value|$single_quoted_attrib_value|$double_quoted_attrib_value))?";
-        $opening_tag = "<($tagname)($attributes)* *( |/?>|$)";
-        $closing_tag = "</$tagname *>";
+        $opening_tag = "<($tagname)($attributes)* *\/?>";
+        $closing_tag = "<\/$tagname *>";
+
         if(preg_match("/^ {0,3}($opening_tag|$closing_tag)/i",$line, $matches)){
             $lines = [];
             try{
@@ -156,9 +158,10 @@ class HTMLBlock implements Block
                     $line = $parser->peakAhead();
                 }
             } catch(\OutOfRangeException $ignored){}
-
-            $parser->consumeLine();
-            $lines[] = $line;
+            try{
+                $parser->consumeLine();
+                $lines[] = $line;
+            } catch(\OutOfRangeException $ignored){}
 
             return new HTMLBlock($parser, $lines);
         }
@@ -168,6 +171,6 @@ class HTMLBlock implements Block
 
     public function render()
     {
-        return implode("\n", $this->lines)."\n";
+        return implode("\n", $this->lines);
     }
 }
